@@ -1,6 +1,7 @@
 Miuview API - image and gallery API
 ===========
 
+Important! This repository is not under development anymore. It is here only for archive purpose
 
 Current development version 1.2
 
