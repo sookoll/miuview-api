@@ -9,12 +9,12 @@
  */
 
 //urls and paths
-define('URL','http://'.$_SERVER['SERVER_NAME'].'/miuview-api/');// url
-define('PATH',$_SERVER['DOCUMENT_ROOT'].'/miuview-api/');// path
+define('URL','http://'.$_SERVER['SERVER_NAME'].'/miuview-api/src/');// url
+define('PATH',__DIR__.'/');// path
 define('PATH_INC',PATH.'includes/');// server-side scripts
 define('PATH_TMPL',PATH.'templates/');// templates
-define('PATH_ALBUMS',$_SERVER['DOCUMENT_ROOT'].'/galerii-pildid/');// original images
-define('PATH_CACHE',$_SERVER['DOCUMENT_ROOT'].'/tmp/galerii-cache/');// thumbnails
+define('PATH_ALBUMS',$_SERVER['DOCUMENT_ROOT'].'/miil_gallery/pictures/');// original images
+define('PATH_CACHE',$_SERVER['DOCUMENT_ROOT'].'/miil_gallery/cache/');// thumbnails
 
 // app
 define('STATUS',1);// status, change something else when managing page
@@ -27,10 +27,10 @@ define('TH_SIZE',100);// thumb size
 define('SECURITY_KEY','security_key');// security key for request private albums
 
 // db parameters
-define('DB_HOST','server');// database server
-define('DB_NAME','dbase');// database
-define('DB_USER','user');// database user
-define('DB_PWD','passwd');// database user password
+define('DB_HOST','localhost');// database server
+define('DB_NAME','dev');// database
+define('DB_USER','root');// database user
+define('DB_PWD','tEAgvEbT');// database user password
 
 // tables
 define('TBL_ALBUMS','miuview_albums');// users
