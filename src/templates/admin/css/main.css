@@ -10,7 +10,7 @@
 /* !html */
 * {margin:0;padding:0;}
 html,body {width:100%;height:100%;}
-body {font-family:Georgia;font-size:13px;color:#000;background:#ddd;}
+body {font-family:Georgia;font-size:13px;color:#000;background:#efefef;}
 li {list-style-type:none;}
 a, a:visited {text-decoration:none;color:#999;}
 a:hover, a:active {text-decoration:none;color:#000;cursor:pointer;}
@@ -59,14 +59,23 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
 .sortable-placeholder {background:#ddd;}
 
 /* !canvas */
-#canvas {position:relative;width:100%;min-height:100%;}
+#canvas {
+    position:relative;
+    width:100%;
+    min-height:100%;
+}
 
 /* !header */
-#header {position:relative;height:80px;background:#efefef;}
+#header {position:relative;height:80px;}
 #header > div {padding:20px 0 0 30px;}
 
 /* !content */
-#content {position:relative;width:100%;overflow-x:hidden;}
+#content {
+    position:relative;
+    width:100%;
+    min-height: 100%;
+    overflow-x:hidden;
+}
 
 /* !login */
 #login {width:400px;margin:160px auto;}
@@ -81,7 +90,22 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
 #sidebar ul li a img {margin:12px;}
 
 /* !main */
-#main {position:relative;width:80%;}
+#main {
+    position:relative;
+    width:80%;
+    background:#ddd;
+}
+#main .progress {
+    background: #ccc
+}
+#main .progress .bar {
+    height: 4px;
+    background: blue
+}
+#main .fileinput-button input {
+    font-size: inherit;
+    width: 100%
+}
 .page {padding:15px;}
 #check-gallery > div {margin-bottom:10px;width:500px;box-shadow:none;}
 #check-gallery h4 {margin-bottom:10px;}
@@ -93,10 +117,26 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
 #gallery ul > li a {background:#ddd;margin-right:5px;}
 #gallery ul > li textarea {margin-bottom:5px;width:181px;height:63px;}
 #gallery ul .sortable-placeholder {width:300px;height:100px;border:1px solid #5b5b5b;}
-#album ul .sortable-placeholder {width:100px;height:100px;border:1px solid #5b5b5b;}
-#album ul > li .thumb {position:absolute;bottom:0;}
+#album ul .sortable-placeholder {
+    width:100px;
+    height:100px;
+    border:1px solid #5b5b5b;
+}
+#album ul > li .thumb {
+    position:absolute;
+    bottom:0;
+    margin-left: -5px;
+    width: 100%;
+    background: rgba(0,0,0,.5);
+    color: white;
+}
 #item ul > li textarea {width:450px;height:80px;}
-#gallery > input,#album > input,#item ul > li input {width:450px;padding:5px;border:1px solid #777;}
+#gallery .footer input,
+#album .footer input,
+#item ul > li input {width:450px;padding:5px;border:1px solid #777;}
 #album ul > li,#item ul > li {display:block;}
 #item ul > li .c {}
 /* !footer */
+.footer {
+    margin-top: 100px;
+}

@@ -1,77 +1,92 @@
 <div id="sidebar" class="float-left">
-	<ul>
-		<li><a href="check-gallery" title="Kontrolli galeriid"><img src="{_def-tmpl_}images/process_accept.png"></a></li>
-		<li><a href="organize" class="active" title="Korralda"><img src="{_def-tmpl_}images/ruler_pencil.png"></a></li>
-	</ul>
+    <ul>
+        <li><a href="check-gallery" title="Kontrolli galeriid"><img src="{_def-tmpl_}images/process_accept.png"></a></li>
+        <li><a href="organize" class="active" title="Korralda"><img src="{_def-tmpl_}images/ruler_pencil.png"></a></li>
+    </ul>
 </div>
 <div id="main" class="float-left">
-	<div class="hide page" id="check-gallery">
-		<button class="button submit">Korrasta galerii</button>
-		<img src="{_def-tmpl_}images/spinner.gif" class="spinner">
-		<div class="c">
-			<div class="cheader">Kõik albumid, mis pole andmebaasis, salvestatakse andmebaasi</div>
-			<div class="cbody">
-				<ul id="albums_no_db"></ul>
-			</div>
-		</div>
-		<div class="c">
-			<div class="cheader">Kõik üksikud pildid, mida pole andmebaasis, salvestatakse andmebaasi</div>
-			<div class="cbody">
-				<ul id="items_no_db"></ul>
-			</div>
-		</div>
-		<div class="c">
-			<div class="cheader">Üleliigsed albumid andmebaasis, kustutatakse andmebaasist</div>
-			<div class="cbody">
-				<ul id="db_no_albums"></ul>
-			</div>
-		</div>
-		<div class="c">
-			<div class="cheader">Üleliigsed üksikud pildid andmebaasis, kustutatakse andmebaasist</div>
-			<div class="cbody">
-				<ul id="db_no_items"></ul>
-			</div>
-		</div>
-		<div class="c">
-			<div class="cheader">Üleliigsed puhvri albumid, kustutatakse</div>
-			<div class="cbody">
-				<ul id="cache_no_albums"></ul>
-			</div>
-		</div>
-		<div class="c">
-			<div class="cheader">Üleliigsed üksikud puhvri pildid, kustutatakse</div>
-			<div class="cbody">
-				<ul id="cache_no_items"></ul>
-			</div>
-		</div>
-	</div>
-	<div class="hide page" id="organize">
-		<div class="hide" id="gallery">
-			<button class="button submit">Salvesta muudatused</button>
-			<img src="{_def-tmpl_}images/spinner.gif" class="spinner"><br>
-			<ul></ul>
-			<div class="clear"></div>
-			Võti privaatsete albumite pärimiseks (url'i parameetri key väärtus)<br>
-			<input type="text" class="skey"/><br>
-			Galerii metadata päring<br>
-			<input type="text" class="url"/>
-		</div>
-		<div class="hide" id="album">
-			<button class="button back">Tagasi</button>
-			<button class="button submit">Salvesta muudatused</button>
-			<img src="{_def-tmpl_}images/spinner.gif" class="spinner"><br>
-			<h4></h4>
-			<ul></ul>
-			<div class="clear"></div>
-			Albumi metadata päring<br>
-			<input type="text" class="url"/>
-		</div>
-		<div class="hide" id="item">
-			<button class="button back">Tagasi</button>
-			<button class="button submit">Salvesta muudatused</button>
-			<img src="{_def-tmpl_}images/spinner.gif" class="spinner"><br>
-			<ul></ul>
-			<div class="clear"></div>
-		</div>
-	</div>
+    <div class="progress">
+        <div class="bar" style="width: 0%;"></div>
+    </div>
+    <div class="hide page" id="check-gallery">
+        <button class="button submit">Korrasta galerii</button>
+        <img src="{_def-tmpl_}images/spinner.gif" class="spinner">
+        <div class="c">
+            <div class="cheader">Kõik albumid, mis pole andmebaasis, salvestatakse andmebaasi</div>
+            <div class="cbody">
+                <ul id="albums_no_db"></ul>
+            </div>
+        </div>
+        <div class="c">
+            <div class="cheader">Kõik üksikud pildid, mida pole andmebaasis, salvestatakse andmebaasi</div>
+            <div class="cbody">
+                <ul id="items_no_db"></ul>
+            </div>
+        </div>
+        <div class="c">
+            <div class="cheader">Üleliigsed albumid andmebaasis, kustutatakse andmebaasist</div>
+            <div class="cbody">
+                <ul id="db_no_albums"></ul>
+            </div>
+        </div>
+        <div class="c">
+            <div class="cheader">Üleliigsed üksikud pildid andmebaasis, kustutatakse andmebaasist</div>
+            <div class="cbody">
+                <ul id="db_no_items"></ul>
+            </div>
+        </div>
+        <div class="c">
+            <div class="cheader">Üleliigsed puhvri albumid, kustutatakse</div>
+            <div class="cbody">
+                <ul id="cache_no_albums"></ul>
+            </div>
+        </div>
+        <div class="c">
+            <div class="cheader">Üleliigsed üksikud puhvri pildid, kustutatakse</div>
+            <div class="cbody">
+                <ul id="cache_no_items"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="hide page" id="organize">
+        <div class="hide subpage" id="gallery">
+            <button class="button submit">Salvesta muudatused</button>
+            <img src="{_def-tmpl_}images/spinner.gif" class="spinner">
+            <span class="fileinput-button">
+                <span>Galeriisse albumi lisamiseks lohista pildid siia kasti</span>
+                <input id="fileupload1" type="file" name="files1[]" multiple>
+            </span>
+            <ul></ul>
+            <div class="clear"></div>
+            <div class="footer">
+                Võti privaatsete albumite pärimiseks (url'i parameetri key väärtus)<br>
+                <input type="text" class="skey"/><br>
+                Galerii metadata päring<br>
+                <input type="text" class="url"/>
+            </div>
+        </div>
+        <div class="hide subpage" id="album">
+            <button class="button back">Tagasi</button>
+            <button class="button submit">Salvesta muudatused</button>
+            <img src="{_def-tmpl_}images/spinner.gif" class="spinner">
+            <span class="fileinput-button">
+                <span>Albumisse piltide lisamiseks lohista pildid siia kasti</span>
+                <input id="fileupload2" type="file" name="files2[]" multiple>
+            </span>
+            <h4></h4>
+            <ul></ul>
+            <div class="clear"></div>
+            <div class="footer">
+                Albumi metadata päring<br>
+                <input type="text" class="url"/>
+            </div>
+        </div>
+        <div class="hide subpage" id="item">
+            <button class="button back">Tagasi</button>
+            <button class="button submit">Salvesta muudatused</button>
+            <img src="{_def-tmpl_}images/spinner.gif" class="spinner"><br>
+            <ul></ul>
+            <div class="clear"></div>
+        </div>
+    </div>
 </div>

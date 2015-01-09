@@ -8,6 +8,8 @@
  * 
  */
 
+error_reporting(E_ALL | E_STRICT);
+
 // include configuration
 include 'config.php';
 

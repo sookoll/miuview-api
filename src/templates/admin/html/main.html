@@ -4,13 +4,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta charset="utf-8">
 	<title>{_content-header_}</title>
+    <link type="text/css" rel="stylesheet" href="{_def-tmpl_}css/jquery.fileupload.css">
 	<link type="text/css" rel="stylesheet" href="{_def-tmpl_}css/main.css">
-	<script type="text/javascript" src="jscript/jquery-1.6.2.min.js"></script>
-	<script type="text/javascript" src="jscript/jquery-ui-1.8.15.custom.min.js"></script>
-	<script type="text/javascript">
-		var albums='{_def-albums_}';
-	</script>
-	<script type="text/javascript" src="jscript/{_user-login-js_}.js"></script>
 </head>
 <body>
 
@@ -36,6 +31,17 @@
 		</div><!-- /footer -->
 		
 	</div><!-- /canvas -->
+    
+    <script type="text/javascript" src="js/vendor/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="js/vendor/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery.fileupload.js"></script>
+
+	<script type="text/javascript">
+		var albums='{_def-albums_}';
+	</script>
+	<script type="text/javascript" src="js/{_user-login-js_}.js"></script>
 	
 </body>
 </html>

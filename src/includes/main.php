@@ -87,8 +87,18 @@ class main {
 
     public function submitCheck(){
         global $sess,$func;
-        $tmp['content']['status'] = '0';
-
+        $tmp = array(
+            'content_type' => 'json',
+            'content' => array(
+                'status' => $this->manageGallery(),
+            )
+        );
+        $this->output = $tmp;
+    }
+    
+    private function manageGallery(){
+        global $sess,$func;
+        $status = 0;
         if($sess->miuview_admin_in === true && file_exists(PATH_ALBUMS) && file_exists(PATH_CACHE)){
 
             // format names
@@ -158,6 +168,9 @@ class main {
                                 $func->makeQuery($q);
                             }
                         }
+                        // add first item as thumb
+                        $q = "UPDATE ".TBL_ALBUMS." SET thumb = (SELECT item FROM ".TBL_ITEMS." WHERE album='".$album."' ORDER BY sort LIMIT 1) WHERE album='".$album."'";
+                        $func->makeQuery($q);
                     }
                 }
             }
@@ -201,11 +214,10 @@ class main {
                 }
             }
 
-            $tmp['content']['status'] = '1';
+            $status = 1;
 
         }
-        $tmp['content_type'] = 'json';
-        $this->output = $tmp;
+        return $status;
     }
 
     // load gallery
@@ -223,7 +235,7 @@ class main {
                     $a['name'] = $row['title']!=''?$row['title']:$row['album'];
                     $a['thumb'] = $row['thumb']!=''?$a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['thumb'].'&size=100&mode=square&ss=showonfly&key='.md5(SECURITY_KEY):'{_def-tmpl_}images/album.png';
                     $a['pics'] = count($items[$row['album']]);
-                    $a['public'] = $row['public']==1?'checked':'';
+                    $a['public'] = $row['public']==1?'checked="checked"':'';
                     $tmp['content']['data'] .= $func->replace_tags($html,$a);
                 }
             }
@@ -243,7 +255,7 @@ class main {
         if($sess->miuview_admin_in === true){
             $albums = $func->getAlbums();
             foreach($data as $k => $v){
-                if(array_key_exists('publc',$data[$k]) && $data[$k]['publc']=='checked')
+                if(array_key_exists('publc',$data[$k]) && $data[$k]['publc'] === 'true')
                     $public=1;
                 else
                     $public=0;
@@ -370,6 +382,78 @@ class main {
         $tmp['content_type'] = 'json';
         $this->output = $tmp;
     }
+    
+    // upload
+    public function upload() {
+        global $sess,$func,$album;
+        if($sess->miuview_admin_in !== true){
+            die('User must be logged in');
+        }
+        $tmp = array(
+            'status' => 0,
+            'files' => array()
+        );
+        $uploadOk = 1;
+        
+        if(isset($album) && strpos($album, '../') === false && is_dir(PATH_ALBUMS.$album)) {
+            $target_dir = PATH_ALBUMS.$album;
+            $key = 'files2';
+        } else if(isset($_POST['hash']) && strpos($_POST['hash'], '../') === false) {
+            if(!is_dir(PATH_ALBUMS.$_POST['hash']))
+                @mkdir(PATH_ALBUMS.$_POST['hash']);
+            $target_dir = PATH_ALBUMS.$_POST['hash'];
+            $key = 'files1';
+        }
+        
+        $target_file = $target_dir .'/'. basename($_FILES[$key]["name"][0]);
+        
+        // check image
+        $check = getimagesize($_FILES[$key]["tmp_name"][0]);
+        if($check === false) {
+            $uploadOk = 0;
+        }
+        
+        
+        // Check if file already exists
+        if (file_exists($target_file)) {
+            $target_file = $this->appendFileName($target_file);
+        }
+        // Check file size
+        if ($_FILES[$key]["size"][0] > 10000000) {
+            $uploadOk = 0;
+        }
+        
+        // Allow certain file formats
+        $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+        
+        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+            $uploadOk = 0;
+        }
+        //var_dump($target_file, pathinfo($target_file,PATHINFO_EXTENSION), $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif");
+        if ($uploadOk == 1) {
+            if (move_uploaded_file($_FILES[$key]["tmp_name"][0], $target_file)) {
+                $tmp['status']=$uploadOk;
+            }
+        }
+        
+        header('Content-Type: text/json');
+        echo json_encode($tmp);
+        exit;
+    }
+    
+    private function appendFileName($name){
+        $path_parts = pathinfo($name);
+        $actual_name = $path_parts['basename'];
+        $original_name = $actual_name;
+        $extension = $path_parts['extension'];
+        $i = 1;
+        while(file_exists($path_parts['dirname'].'/'.$actual_name.".".$extension)){
+            $actual_name = (string)$original_name.$i;
+            $name = $path_parts['dirname'].'/'.$actual_name.".".$extension;
+            $i++;
+        }
+        return $name;
+    }
 
     // exif
     private function getExif($i){
@@ -390,16 +474,16 @@ class main {
             // read content into array
             $caches = scandir($path);
             sort($caches);
-            if(count($caches)>2){ // The 2 accounts for . and .. 
+            if(count($caches)>2){ // The 2 accounts for . and ..
                 // loop
                 foreach($caches as $cache){
                     if(file_exists($path.$cache) && $cache != '.' && $cache != '..' && is_dir($path.$cache)){
                         $files = scandir($path.$cache);
                         sort($files);
-                        if(count($files)>2){ // The 2 accounts for . and .. 
+                        if(count($files)>2){ // The 2 accounts for . and ..
                             if(file_exists($path.$cache.'/'.$item)){
                                 unlink($path.$cache.'/'.$item);
-                            }	
+                            }
                         }
                     }
                 }
