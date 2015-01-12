@@ -158,7 +158,28 @@ var Gallery = new function(){
             },
             'json'
         );
-    }
+    };
+    
+    // delete album
+    this.deleteAlbum = function (id, cb) {
+        $.post('request.php?'+rnd(),{
+                c: 'main',
+                m: 'deleteAlbum',
+                album: id
+            },
+            function(response){
+                if(response.status=='1'){
+                    if (typeof cb === 'function') {
+                        cb();
+                    }
+                }
+                else {
+                    alert('piip');
+                }
+            },
+            'json'
+        );
+    };
 
     this.loadAlbum = function(a){
         Gallery.reset();
@@ -174,7 +195,7 @@ var Gallery = new function(){
             function(response){
                 if(response.status=='1'){ //if correct login detail
                     $('#album ul').html(response.data);
-                    $('#album > h4').html(Gallery.album);
+                    $('#album > h4').html('Album: ' + response.title + ' (' + Gallery.album + ')');
                     $('#album input.url').val(response.url);
                     $('#album').removeClass('hide');
                     $('#album ul').sortable({
@@ -227,6 +248,28 @@ var Gallery = new function(){
                 if(response.status=='1'){ //if correct login detail
                     $(button).parent().find('.spinner').hide();
                     Gallery.loadAlbum(Gallery.album);
+                }
+                else {
+                    alert('piip');
+                }
+            },
+            'json'
+        );
+    };
+    
+    // delete item
+    this.deleteItem = function (id, cb) {
+        $.post('request.php?'+rnd(),{
+                c: 'main',
+                m: 'deleteItem',
+                album: Gallery.album,
+                item: id
+            },
+            function(response){
+                if(response.status=='1'){
+                    if (typeof cb === 'function') {
+                        cb();
+                    }
                 }
                 else {
                     alert('piip');
@@ -401,9 +444,23 @@ $(function() {
     });
 
     // open album
-    $('#gallery').on('click', 'ul li a',function(e){
+    $('#gallery').on('click', 'ul li > a',function(e){
         e.preventDefault();
         Gallery.loadAlbum($(this).attr('href'));
+    });
+    
+    // delete albu
+    $('#gallery').on('click', 'li a.delete', function(e){
+        e.preventDefault();
+        var item = $(this).closest('li'),
+            permit = confirm('Kustutan albumi ja kõik albumi pildid?');
+        if (permit) {
+            Gallery.deleteAlbum(item.attr('id'), function(){
+                Gallery.submitCheck(item.closest('.subpage').find('.submit'), function(){
+                    Gallery.loadGallery();
+                });
+            });
+        }
     });
 
     // go back to gallery
@@ -417,9 +474,23 @@ $(function() {
         e.preventDefault();
         Gallery.submitAlbum(this);
     });
+    
+    // delete item
+    $('#album').on('click', 'li .thumb a.delete', function(e){
+        e.preventDefault();
+        var item = $(this).closest('li'),
+            permit = confirm('Kustutan pildi?');
+        if (permit) {
+            Gallery.deleteItem(item.attr('id'), function(){
+                Gallery.submitCheck(item.closest('.subpage').find('.submit'), function(){
+                    Gallery.loadAlbum(Gallery.album);
+                });
+            });
+        }
+    });
 
     // open item
-    $('#album').on('click', 'ul li a',function(e){
+    $('#album').on('click', 'ul li > a',function(e){
         e.preventDefault();
         Gallery.loadItem($(this).attr('href'));
     });

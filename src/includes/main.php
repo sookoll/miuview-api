@@ -27,7 +27,7 @@ class main {
         // if user is logged in
         if($sess->miuview_admin_in === true){
             $html=PATH_TMPL.TEMPLATE.'/html/admin.html';
-            $tmp['content-body'] = $func->replace_tags($html,$ar);
+            $tmp['content-body'] = $func->replace_tags($html,array());
             $tmp['user-login-js'] = 'admin';
             $tmp['content-header'] = 'Adminni';
             $tmp['logout'] = ' [ <a href="#" id="logout-submit">Logi välja</a> ]';
@@ -262,7 +262,7 @@ class main {
                 if($data[$k]['name']==$albums[$k]['title'] && $data[$k]['sort']==$albums[$k]['sort'] && $public==$albums[$k]['public'])
                     continue;
                 else{
-                    $q = "UPDATE ".TBL_ALBUMS." SET title='".$data[$k]['name']."',sort=".$data[$k]['sort'].",public=".$public." WHERE album='".$k."'";
+                    $q = "UPDATE ".TBL_ALBUMS." SET title='".htmlentities($data[$k]['name'], ENT_QUOTES)."',sort=".$data[$k]['sort'].",public=".$public." WHERE album='".$k."'";
                     if($func->makeQuery($q))
                         $tmp['content']['status'] = '1';
                     else
@@ -294,6 +294,7 @@ class main {
                 }
             }
             $tmp['content']['url'] = URL.'?request=getitem&album='.$album.'&item=*&size='.ITEM_SIZE.'&thsize='.TH_SIZE.'&key=';
+            $tmp['content']['title'] = $albums[$album]['title'];
             $tmp['content']['status'] = '1';
         }
         $tmp['content_type'] = 'json';
@@ -372,7 +373,7 @@ class main {
             $items = $func->getItems($album,$item);
             if(array_key_exists($album,$items) && array_key_exists($item,$items[$album])){
                 if($items[$album][$item]['description']!=$description || $items[$album][$item]['title']!=$title){
-                    $q = "UPDATE ".TBL_ITEMS." SET title='".$title."',description='".$description."' WHERE album='".$album."' AND item='".$item."'";
+                    $q = "UPDATE ".TBL_ITEMS." SET title='".htmlentities($title, ENT_QUOTES)."',description='".htmlentities($description, ENT_QUOTES)."' WHERE album='".$album."' AND item='".$item."'";
                     if($func->makeQuery($q))
                         $tmp['content']['status'] = '1';
                 }
@@ -383,6 +384,40 @@ class main {
         $this->output = $tmp;
     }
     
+    // delete album
+    public function deleteAlbum(){
+        global $sess,$func,$album;
+        $tmp = array(
+            'content' => array(
+                'status' => 0
+            ),
+            'content_type' => 'json'
+        );
+        if($sess->miuview_admin_in === true){
+            if(is_dir(PATH_ALBUMS.$album) && $func->removedir(PATH_ALBUMS.$album)){
+                $tmp['content']['status'] = 1;
+            }
+        }
+        $this->output = $tmp;
+    }
+    
+    // delete item
+    public function deleteItem(){
+        global $sess,$func,$album,$item;
+        $tmp = array(
+            'content' => array(
+                'status' => 0
+            ),
+            'content_type' => 'json'
+        );
+        if($sess->miuview_admin_in === true){
+            if(is_file(PATH_ALBUMS.$album.'/'.$item) && @unlink(PATH_ALBUMS.$album.'/'.$item)){
+                $tmp['content']['status'] = 1;
+            }
+        }
+        $this->output = $tmp;
+    }
+    
     // upload
     public function upload() {
         global $sess,$func,$album;
@@ -390,8 +425,7 @@ class main {
             die('User must be logged in');
         }
         $tmp = array(
-            'status' => 0,
-            'files' => array()
+            'status' => 0
         );
         $uploadOk = 1;
         

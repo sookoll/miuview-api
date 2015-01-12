@@ -107,6 +107,13 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
     width: 100%
 }
 .page {padding:15px;}
+a.delete {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: url('../images/delete.png') no-repeat center;
+    background-size: cover
+}
 #check-gallery > div {margin-bottom:10px;width:500px;box-shadow:none;}
 #check-gallery h4 {margin-bottom:10px;}
 #check-gallery .folder {padding-left:20px;background:url('../images/folder.gif') no-repeat;}
@@ -114,9 +121,15 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
 #organize ul {position:relative;}
 #gallery ul > li,#album ul > li,#item ul > li .c {margin:0 10px 10px 0;box-shadow:none;padding:5px;position:relative;float:left;}
 #gallery ul > li {width:300px;}
-#gallery ul > li a {background:#ddd;margin-right:5px;}
+#gallery ul > li > a {
+    background:#ddd;
+    margin-right:5px;
+}
 #gallery ul > li textarea {margin-bottom:5px;width:181px;height:63px;}
 #gallery ul .sortable-placeholder {width:300px;height:100px;border:1px solid #5b5b5b;}
+#gallery ul li .count {
+    
+}
 #album ul .sortable-placeholder {
     width:100px;
     height:100px;
@@ -127,8 +140,10 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
     bottom:0;
     margin-left: -5px;
     width: 100%;
-    background: rgba(0,0,0,.5);
-    color: white;
+    background: rgba(255, 255, 255,.8);
+}
+#album ul > li .thumb a {
+    
 }
 #item ul > li textarea {width:450px;height:80px;}
 #gallery .footer input,

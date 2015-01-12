@@ -5,6 +5,9 @@
 	</a>
 	<textarea class="float-left">{_name_}</textarea><br>
 	<input type="checkbox" {_public_} id="public_{_album_}" title="Kas album on avalikult päritav"/><label for="public_{_album_}"  title="Kas album on avalikult päritav">Avalik</label>
-	<span class="float-right strong">{_pics_}</span>
+	<div class="float-right">
+        <a href="#" class="delete float-right" title="Kustuta"></a>
+        <span class="strong count float-right">{_pics_}</span>
+    </div>
 	<div class="clear"></div>
 </li>
