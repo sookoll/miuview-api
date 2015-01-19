@@ -233,7 +233,7 @@ class main {
                     $items = $func->getItems($row['album']);
                     $a['album'] = $row['album'];
                     $a['name'] = $row['title']!=''?$row['title']:$row['album'];
-                    $a['thumb'] = $row['thumb']!=''?$a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['thumb'].'&size=100&mode=square&ss=showonfly&key='.md5(SECURITY_KEY):'{_def-tmpl_}images/album.png';
+                    $a['thumb'] = $row['thumb']!=''?$a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['thumb'].'&size=100&mode=square&key='.md5(SECURITY_KEY):'{_def-tmpl_}images/album.png';
                     $a['pics'] = count($items[$row['album']]);
                     $a['public'] = $row['public']==1?'checked="checked"':'';
                     $tmp['content']['data'] .= $func->replace_tags($html,$a);
@@ -287,7 +287,7 @@ class main {
                 $albums = $func->getAlbums($album);
                 foreach($items[$album] as $row){
                     $a['item'] = $row['item'];
-                    $a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['item'].'&size='.TH_SIZE.'&mode=square&ss=showonfly&key='.md5(SECURITY_KEY);
+                    $a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['item'].'&size='.TH_SIZE.'&mode=square&key='.md5(SECURITY_KEY);
                     $a['album-thumb'] = $row['item']==$albums[$album]['thumb']?'checked':'';
                     $a['width'] = $a['height'] = TH_SIZE;
                     $tmp['content']['data'] .= $func->replace_tags($html,$a);
@@ -350,7 +350,7 @@ class main {
 
                 $a['item'] = $item;
                 $a['next'] = $tmp['content']['next'];
-                $a['thumb'] = URL.'?request=getimage&album='.$album.'&item='.$item.'&size='.ITEM_SIZE.'&mode=longest&ss=showonfly&key='.md5(SECURITY_KEY);
+                $a['thumb'] = URL.'?request=getimage&album='.$album.'&item='.$item.'&size='.ITEM_SIZE.'&mode=longest&key='.md5(SECURITY_KEY);
                 $a['url'] = URL.'?request=getitem&album='.$album.'&item='.$item.'&size='.ITEM_SIZE.'&thsize='.TH_SIZE.'&key=';
                 $a['title'] = $items[$album][$item]['title'];
                 $a['description'] = $items[$album][$item]['description'];

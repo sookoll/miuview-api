@@ -111,15 +111,24 @@ var Gallery = new function(){
                         items:'> li',
                         handle:'.dragger',
                         tolerance:'pointer',
-                        change:function(e,ui){
-                            Gallery.enableButton('#gallery .submit');
+                        update:function(e,ui){
+                            //Gallery.enableButton('#gallery .submit');
+                            Gallery.submitGallery('#gallery .submit');
                         }
                     });
-                    $('#gallery ul > li textarea').on('keyup', function(e) {
-                        Gallery.enableButton('#gallery .submit');
+                    var val = null;
+                    $('#gallery ul > li textarea').on('focus', function(e) {
+                        //Gallery.enableButton('#gallery .submit');
+                        val = $(this).val();
+                    });
+                    $('#gallery ul > li textarea').on('blur', function(e) {
+                        if(val !== $(this).val())
+                            Gallery.submitGallery('#gallery .submit');
+                        val = null;
                     });
                     $('#gallery ul > li input[type=checkbox]').on('change', function(e) {
-                        Gallery.enableButton('#gallery .submit');
+                        //Gallery.enableButton('#gallery .submit');
+                        Gallery.submitGallery('#gallery .submit');
                     });
                 }
                 else {
@@ -131,7 +140,7 @@ var Gallery = new function(){
         this.enableUploader($('#fileupload1'));
     };
 
-    this.submitGallery = function(button){
+    this.submitGallery = function(button, reload){
         $(button).parent().find('.spinner').show();
         Gallery.disableButton(button);
         var params = {data:{}};
@@ -150,7 +159,8 @@ var Gallery = new function(){
             function(response){
                 if(response.status=='1'){ //if correct login detail
                     $(button).parent().find('.spinner').hide();
-                    Gallery.loadGallery();
+                    if (reload)
+                        Gallery.loadGallery();
                 }
                 else {
                     alert('piip');
@@ -204,14 +214,14 @@ var Gallery = new function(){
                         items:'> li',
                         handle:'.dragger',
                         tolerance:'pointer',
-                        change:function(e,ui){
-                            Gallery.enableButton('#album .submit');
+                        update:function(e,ui){
+                            Gallery.submitAlbum('#album .submit');
                         }
                     });
 
                     $('#album ul > li input[type=checkbox]').click(function() {
                         $('#album ul > li input[type=checkbox]').filter(':checked').not(this).prop('checked', false);
-                        Gallery.enableButton('#album .submit');
+                        Gallery.submitAlbum('#album .submit');
                     });
 
                 }
@@ -226,7 +236,7 @@ var Gallery = new function(){
     };
 
     // submit album changes
-    this.submitAlbum = function(button){
+    this.submitAlbum = function(button, reload){
         $(button).parent().find('.spinner').show();
         Gallery.disableButton(button);
         var params = {data:{sort:{}}};
@@ -247,7 +257,8 @@ var Gallery = new function(){
             function(response){
                 if(response.status=='1'){ //if correct login detail
                     $(button).parent().find('.spinner').hide();
-                    Gallery.loadAlbum(Gallery.album);
+                    if(reload)
+                        Gallery.loadAlbum(Gallery.album);
                 }
                 else {
                     alert('piip');
@@ -297,8 +308,15 @@ var Gallery = new function(){
                 if(response.status=='1'){ //if correct login detail
                     $('#item ul').html(response.data);
                     $('#item').removeClass('hide');
-                    $('#item ul > li input.title,#item ul > li textarea').on('keyup', function(e) {
-                        Gallery.enableButton('#item .submit');
+                    var val = null;
+                    $('#item ul > li input.title,#item ul > li textarea').on('focus', function(e) {
+                        //Gallery.enableButton('#item .submit');
+                        val = $(this).val();
+                    });
+                    $('#item ul > li input.title,#item ul > li textarea').on('blur', function(e) {
+                        if(val !== $(this).val())
+                            Gallery.submitItem('#item .submit');
+                        val = null;
                     });
                     Gallery.previtem = response.prev;
                     Gallery.nextitem = response.next;
@@ -312,7 +330,7 @@ var Gallery = new function(){
     };
 
     // submit item changes
-    this.submitItem = function(button){
+    this.submitItem = function(button, reload){
         $(button).parent().find('.spinner').show();
         Gallery.disableButton(button);
 
@@ -327,7 +345,8 @@ var Gallery = new function(){
             function(response){
                 if(response.status=='1'){ //if correct login detail
                     $(button).parent().find('.spinner').hide();
-                    Gallery.loadItem(Gallery.item);
+                    if(reload)
+                        Gallery.loadItem(Gallery.item);
                 }
                 else {
                     alert('piip');
@@ -519,9 +538,9 @@ $(function() {
         postLogout();
     });
 
-    $('textarea,input').on('focus',function(){
+    $('#item').on('focus', 'textarea,input', function(){
         Gallery.focus = true;
-    }).on('blur',function(){
+    }).on('blur','textarea,input', function(){
         Gallery.focus = false;
     });
 
