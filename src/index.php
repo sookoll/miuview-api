@@ -1,11 +1,11 @@
 <?php
 /*
  * Miuview API
- * 
- * 
+ *
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 // include configuration
@@ -19,7 +19,7 @@ if(STATUS != 1) {
 	die('Not allowed!');
 }
 else {
-	
+
 	// start connection
 	$func->connection();
 
@@ -32,7 +32,7 @@ else {
 		echo 'Query string empty';
 		exit;
 	}
-	
+
 	if(!empty($class) && @file_exists(PATH_INC.$class.'.php')){
 		include PATH_INC.$class.'.php';
 		$m = new $class();
@@ -41,7 +41,7 @@ else {
 		echo 'Query string empty';
 		exit;
 	}
-	
+
 	// close connection
 	$func->connection_close();
 }

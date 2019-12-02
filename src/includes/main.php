@@ -1,11 +1,11 @@
-<?php 
+<?php
 /*
  * Miuview API admin
  * main class to process data
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 class main {
@@ -70,10 +70,13 @@ class main {
             // overleft in db, delete it in db
             list($a['db_no_albums'],$a['db_no_items']) = $this->compareArrays($db,$albums,'html');
 
+            // wrong orientation
+            //$a['orientation'] = $this->checkOrientation(PATH_ALBUMS);
+
             $tmp['content']['status'] = '1';
 
-            foreach($a as $i){
-                if(count($i)>0)
+            foreach($a as $i) {
+                if ($i)
                     $tmp['content']['status'] = '2';
             }
 
@@ -95,7 +98,7 @@ class main {
         );
         $this->output = $tmp;
     }
-    
+
     private function manageGallery(){
         global $sess,$func;
         $status = 0;
@@ -202,10 +205,10 @@ class main {
             // check if album thumb exist, if not then remove it
             $q = "SELECT * FROM ".TBL_ALBUMS." ORDER BY album";
             if($result = $func->makeQuery($q)){
-                while($a = mysql_fetch_assoc($result)){
+                while($a = $result->fetch_assoc()){
                     $q = "SELECT item FROM ".TBL_ITEMS." WHERE album = '".$a['album']."' AND item='".$a['thumb']."'";
                     if($result2 = $func->makeQuery($q)){
-                        if(!mysql_num_rows($result2)){
+                        if(!$result2->num_rows){
                             $q = "UPDATE ".TBL_ALBUMS." SET thumb='' WHERE album='".$a['album']."'";
                             $func->makeQuery($q);
                         }
@@ -383,7 +386,7 @@ class main {
         $tmp['content_type'] = 'json';
         $this->output = $tmp;
     }
-    
+
     // delete album
     public function deleteAlbum(){
         global $sess,$func,$album;
@@ -400,7 +403,7 @@ class main {
         }
         $this->output = $tmp;
     }
-    
+
     // delete item
     public function deleteItem(){
         global $sess,$func,$album,$item;
@@ -417,7 +420,7 @@ class main {
         }
         $this->output = $tmp;
     }
-    
+
     // upload
     public function upload() {
         global $sess,$func,$album;
@@ -428,7 +431,7 @@ class main {
             'status' => 0
         );
         $uploadOk = 1;
-        
+
         if(isset($album) && strpos($album, '../') === false && is_dir(PATH_ALBUMS.$album)) {
             $target_dir = PATH_ALBUMS.$album;
             $key = 'files2';
@@ -438,16 +441,16 @@ class main {
             $target_dir = PATH_ALBUMS.$_POST['hash'];
             $key = 'files1';
         }
-        
+
         $target_file = $target_dir .'/'. basename($_FILES[$key]["name"][0]);
-        
+
         // check image
         $check = getimagesize($_FILES[$key]["tmp_name"][0]);
         if($check === false) {
             $uploadOk = 0;
         }
-        
-        
+
+
         // Check if file already exists
         if (file_exists($target_file)) {
             $target_file = $this->appendFileName($target_file);
@@ -456,10 +459,10 @@ class main {
         if ($_FILES[$key]["size"][0] > 10000000) {
             $uploadOk = 0;
         }
-        
+
         // Allow certain file formats
         $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-        
+
         if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
             $uploadOk = 0;
         }
@@ -469,12 +472,12 @@ class main {
                 $tmp['status']=$uploadOk;
             }
         }
-        
+
         header('Content-Type: text/json');
         echo json_encode($tmp);
         exit;
     }
-    
+
     private function appendFileName($name){
         $path_parts = pathinfo($name);
         $actual_name = $path_parts['basename'];
@@ -554,17 +557,60 @@ class main {
         return $tmp;
     }
 
+    private function checkOrientation($path) {
+      global $func;
+      $data = array();
+      if (file_exists($path)) {
+        // read content into array
+        $albums = scandir($path);
+        sort($albums);
+        if (count($albums)>2) { /* The 2 accounts for . and .. */
+          // loop
+          foreach ($albums as $album) {
+            if (file_exists($path.$album) && $album != '.' && $album != '..' && is_dir($path.$album)) {
+              $items = scandir($path.$album);
+              sort($items);
+              if (count($items)>2) { /* The 2 accounts for . and .. */
+                // loop
+                foreach ($items as $item) {
+                  $type = $func->getType($path.$album.'/'.$item);
+                  if (
+                    file_exists($path.$album.'/'.$item) &&
+                    $item != '.' &&
+                    $item != '..' &&
+                    !is_dir($path.$album.'/'.$item) &&
+                    $type &&
+                    $type['ext'] === 'jpg' &&
+                    function_exists('exif_read_data')
+                  ) {
+                    $exif = exif_read_data($path.$album.'/'.$item);
+                    if ($exif && isset($exif['Orientation'])) {
+                      $orientation = $exif['Orientation'];
+                      if ($orientation != 1){
+                        $data[] = '<li class="picture">'.$path.$album.'/'.$item.'</li>';
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return implode('', $data);
+    }
+
     private function loadDB2array(){
         global $func;
         $tmp = array();
 
         $q = "SELECT album FROM ".TBL_ALBUMS." ORDER BY album";
         if($result = $func->makeQuery($q)){
-            while($a = mysql_fetch_assoc($result)){
+            while($a = $result->fetch_assoc()){
                 $tmp[$a['album']] = array();
                 $q = "SELECT item FROM ".TBL_ITEMS." WHERE album = '".$a['album']."' ORDER BY item";
                 if($result2 = $func->makeQuery($q)){
-                    while($i = mysql_fetch_assoc($result2)){
+                    while($i = $result2->fetch_assoc()){
                         $tmp[$a['album']][] = $i['item'];
                     }
                 }

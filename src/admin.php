@@ -1,11 +1,11 @@
-<?php 
+<?php
 /*
  * Miuview API
  * admin.php
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 error_reporting(E_ALL | E_STRICT);
@@ -30,7 +30,7 @@ if(STATUS != 1) {
 else {
 
 	$class='main';
-	
+
 	// call a main object
 	if($class && @file_exists(PATH_INC.$class.'.php')){
 		include PATH_INC.$class.'.php';

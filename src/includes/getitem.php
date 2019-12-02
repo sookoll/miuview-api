@@ -1,35 +1,35 @@
-<?php 
+<?php
 /*
  * Miuview API
  * getalbum class
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 class getitem {
-	
+
 	var $result;
 	var $album;
 	var $size;
 	var $thsize;
 	var $skey;
-	
+
 	public function __construct(){
 		global $func,$album,$item,$size,$thsize,$key,$start,$limit;
-		
+
 		$this->size = $size?$size:ITEM_SIZE;
 		$this->thsize = $thsize?$thsize:TH_SIZE;
-		
+
 		$this->skey = $key;
-		
+
 		$aresult = array();
 		$iresult = array();
 		if(!empty($album) && !empty($item)){
 			$albums = explode(',',$album);
 			$items = explode(',',$item);
-			
+
 			if(count($albums)>1){
 				foreach($albums as $a){
 					$aresult = array_merge($aresult,$func->getAlbums($a));
@@ -63,17 +63,17 @@ class getitem {
 					}
 				}
 			}
-			//print_r($result);
+			print_r($result);
 			$this->result = $this->formatResult($aresult,$iresult);
 			$this->output();
 		} else
 			die('Parameter album and item not set');
 	}
-	
+
 	private function formatResult($ar,$ir){
 		global $func;
 		$data = array();
-		
+
 		$data['query'] = $func->selfURL();
 		$i=0;
 		foreach($ir as $album => $items){
@@ -97,21 +97,19 @@ class getitem {
 			}
 		}
 		$data['items_count'] = $i;
-		
+
 		return json_encode($data);
 	}
 
 	private function c($i=null){
 		return $i!=null?$i:'';
 	}
-	
+
 	private function output(){
-		
+		header('Content-Type: text/json; charset=utf-8');
 		if($_GET['callback']){
-			header('Content-Type: text/json');
 			echo $_GET['callback'].'('.$this->result.');';
 		}else{
-			header('Content-Type: text/html');
 			echo $this->result;
 		}
 	}

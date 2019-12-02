@@ -1,32 +1,32 @@
-<?php 
+<?php
 /*
  * Miuview API
  * getitem class
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 class getimage {
-	
+
 	public function __construct(){
 		global $func,$album,$item,$size,$mode,$ss;
-		
+
 		if(!empty($album) && !empty($item) && $i=$func->getType(PATH_ALBUMS.$album.'/'.$item)){
 			// include resize class
 			include_once PATH_INC.'resizeImage.php';
 			$thumb=new ResizeImage(PATH_ALBUMS.$album.'/'.$item);
 			$thumb->setThumbParams($size,$mode,0,85);
-			
+
 			$cache = $thumb->th_mode.$thumb->th_size['init'].'crop'.$thumb->th_crop.'q'.$thumb->th_quality;
-			
+
 			if(!file_exists(PATH_CACHE.$album) && $ss != 'showonfly')
 				mkdir(PATH_CACHE.$album);
 			if(!file_exists(PATH_CACHE.$album.'/'.$cache) && $ss != 'showonfly')
 				mkdir(PATH_CACHE.$album.'/'.$cache);
 			if(!file_exists(PATH_CACHE.$album.'/'.$cache.'/'.$item)){
-				
+
 				$thumb->createThumb();
 				if($ss == 'showonfly')
 					$thumb->outputImage();
@@ -38,7 +38,7 @@ class getimage {
 				$this->displayGraphicFile(PATH_CACHE.$album.'/'.$cache.'/'.$item,$i['ext']);
 		}
 	}
-	
+
 	// Return the requested graphic file to the browser
 	// or a 304 code to use the cached browser copy
 	private function displayGraphicFile ($graphicFileName, $fileType='jpeg') {
@@ -51,11 +51,15 @@ class getimage {
 			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $fileModTime).' GMT', true, 304);
 		} else {
 			// Image not cached or cache outdated, we respond '200 OK' and output the image.
+			header("Pragma: public");
+			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			header("Cache-Control: private",false); // required for certain browsers
 			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $fileModTime).' GMT', true, 200);
-			header('Content-type: image/'.$fileType);
-			header('Content-transfer-encoding: binary');
-			header('Content-length: '.filesize($graphicFileName));
+			header('Content-type: ' . mime_content_type($graphicFileName));
+			//header('Content-transfer-encoding: binary');
+			//header('Content-length: '.filesize($graphicFileName));
 			readfile($graphicFileName);
+			exit();
 		}
 	}
 

@@ -1,10 +1,10 @@
 /*
  * Miuview API admin
  * main.css
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 /* !html */
@@ -102,6 +102,9 @@ textarea {padding:5px;border:1px solid #777;resize:none;}
     height: 4px;
     background: blue
 }
+#main .fileinput-button {
+	position: relative;
+}
 #main .fileinput-button input {
     font-size: inherit;
     width: 100%
@@ -128,7 +131,7 @@ a.delete {
 #gallery ul > li textarea {margin-bottom:5px;width:181px;height:63px;}
 #gallery ul .sortable-placeholder {width:300px;height:100px;border:1px solid #5b5b5b;}
 #gallery ul li .count {
-    
+
 }
 #album ul .sortable-placeholder {
     width:100px;
@@ -143,7 +146,7 @@ a.delete {
     background: rgba(255, 255, 255,.8);
 }
 #album ul > li .thumb a {
-    
+
 }
 #item ul > li textarea {width:450px;height:80px;}
 #gallery .footer input,

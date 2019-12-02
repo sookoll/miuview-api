@@ -1,10 +1,10 @@
 /*
  * Miuview API admin
  * admin.js
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 //random string
@@ -169,7 +169,7 @@ var Gallery = new function(){
             'json'
         );
     };
-    
+
     // delete album
     this.deleteAlbum = function (id, cb) {
         $.post('request.php?'+rnd(),{
@@ -231,7 +231,7 @@ var Gallery = new function(){
             },
             'json'
         );
-        
+
         this.enableUploader($('#fileupload2'));
     };
 
@@ -267,7 +267,7 @@ var Gallery = new function(){
             'json'
         );
     };
-    
+
     // delete item
     this.deleteItem = function (id, cb) {
         $.post('request.php?'+rnd(),{
@@ -368,7 +368,7 @@ var Gallery = new function(){
         Gallery.previtem = '';
         Gallery.nextitem = '';
     }
-    
+
     this.enableUploader = function(input){
         // file upload
         var counter = 0,
@@ -402,7 +402,6 @@ var Gallery = new function(){
                         } else {
                             Gallery.loadGallery();
                         }
-                        
                     });
                 }
             },
@@ -467,7 +466,7 @@ $(function() {
         e.preventDefault();
         Gallery.loadAlbum($(this).attr('href'));
     });
-    
+
     // delete albu
     $('#gallery').on('click', 'li a.delete', function(e){
         e.preventDefault();
@@ -493,7 +492,7 @@ $(function() {
         e.preventDefault();
         Gallery.submitAlbum(this);
     });
-    
+
     // delete item
     $('#album').on('click', 'li .thumb a.delete', function(e){
         e.preventDefault();
@@ -564,7 +563,7 @@ $(function() {
             }
         }
     });
-    
+
     $(document).bind('drop dragover', function (e) {
         e.preventDefault();
     });

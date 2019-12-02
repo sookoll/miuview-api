@@ -2,14 +2,14 @@
 /*
  * Miuview gallery API
  * constants and configuration
- * 
+ *
  * Creator: Mihkel Oviir
  * 08.2011
- * 
+ *
  */
 
 //urls and paths
-define('URL','http://'.$_SERVER['SERVER_NAME'].'/miuview-api/src/');// url
+define('URL','//'.$_SERVER['SERVER_NAME'].'/miuview-api/src/');// url
 define('PATH',__DIR__.'/');// path
 define('PATH_INC',PATH.'includes/');// server-side scripts
 define('PATH_TMPL',PATH.'templates/');// templates
