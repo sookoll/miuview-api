@@ -21,21 +21,33 @@ class getimage {
 
 			$cache = $thumb->th_mode.$thumb->th_size['init'].'crop'.$thumb->th_crop.'q'.$thumb->th_quality;
 
-			if(!file_exists(PATH_CACHE.$album) && $ss != 'showonfly')
-				mkdir(PATH_CACHE.$album);
-			if(!file_exists(PATH_CACHE.$album.'/'.$cache) && $ss != 'showonfly')
-				mkdir(PATH_CACHE.$album.'/'.$cache);
-			if(!file_exists(PATH_CACHE.$album.'/'.$cache.'/'.$item)){
-
+			if (
+				$ss !== 'showonfly' &&
+				!file_exists(PATH_CACHE . $album) &&
+				!mkdir($concurrentDirectory = PATH_CACHE . $album) &&
+				!is_dir($concurrentDirectory)
+			) {
+				throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+			}
+			if(
+				$ss !== 'showonfly' &&
+				!file_exists(PATH_CACHE . $album . '/' . $cache) &&
+				!mkdir($concurrentDirectory = PATH_CACHE . $album . '/' . $cache) &&
+				!is_dir($concurrentDirectory)
+			) {
+				throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+			}
+			if (!file_exists(PATH_CACHE.$album.'/'.$cache.'/'.$item)) {
 				$thumb->createThumb();
-				if($ss == 'showonfly')
+				if ($ss === 'showonfly') {
 					$thumb->outputImage();
-				else {
+				} else {
 					$thumb->outputImage(PATH_CACHE.$album.'/'.$cache.'/'.$item);
 					$this->displayGraphicFile(PATH_CACHE.$album.'/'.$cache.'/'.$item,$i['ext']);
 				}
-			} else
-				$this->displayGraphicFile(PATH_CACHE.$album.'/'.$cache.'/'.$item,$i['ext']);
+			} else {
+				$this->displayGraphicFile(PATH_CACHE . $album . '/' . $cache . '/' . $item, $i['ext']);
+			}
 		}
 	}
 
@@ -46,7 +58,7 @@ class getimage {
 		// Getting headers sent by the client.
 		$headers = $this->getRequestHeaders();
 		// Checking if the client is validating his cache and if it is current.
-		if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == $fileModTime)) {
+		if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) === $fileModTime)) {
 			// Client's cache IS current, so we just respond '304 Not Modified'.
 			header('Last-Modified: '.gmdate('D, d M Y H:i:s', $fileModTime).' GMT', true, 304);
 		} else {
@@ -67,10 +79,8 @@ class getimage {
 	// use built in apache ftn when PHP built as module,
 	// or query $_SERVER when cgi
 	private function getRequestHeaders() {
-		if (function_exists("apache_request_headers")) {
-			if($headers = apache_request_headers()) {
-				return $headers;
-			}
+		if (function_exists("apache_request_headers") && $headers = apache_request_headers()) {
+			return $headers;
 		}
 		$headers = array();
 		// Grab the IF_MODIFIED_SINCE header

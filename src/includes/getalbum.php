@@ -29,13 +29,12 @@ class getalbum {
 					$result = array_merge($result,$func->getAlbums($a));
 				}
 			} else {
-				if($album == '*'){
+				if($album === '*'){
 					$result = $func->getAlbums();
 				} else {
 					$result = $func->getAlbums($album);
 				}
 			}
-			//print_r($result);
 			$this->result = $this->formatResult($result);
 			$this->output();
 		} else
@@ -49,12 +48,12 @@ class getalbum {
 		$data['query'] = $func->selfURL();
 		$i=0;
 		foreach($r as $album){
-			if($album['public']==1 || $this->skey==md5(SECURITY_KEY)) {
+			if($album['public'] === 1 || $this->skey === md5(SECURITY_KEY)) {
 				$items = $func->getItems($album['album']);
 				$data['albums'][$i]['id']=$album['album'];
 				$data['albums'][$i]['title']=$album['title'];
 				$data['albums'][$i]['thumb']=$album['thumb'];
-				$data['albums'][$i]['thumb_url']=($album['thumb']==null || $album['thumb']=='')?'':URL.'?request=getimage&album='.$album['album'].'&item='.$album['thumb'].'&size='.$this->thsize.'&mode=square';
+				$data['albums'][$i]['thumb_url']=($album['thumb'] === null || $album['thumb'] === '')?'':URL.'?request=getimage&album='.$album['album'].'&item='.$album['thumb'].'&size='.$this->thsize.'&mode=square';
 				$data['albums'][$i]['order']=$i;
 				$data['albums'][$i]['query']=URL.'?request=getitem&album='.$album['album'].'&item=*';
 				$data['albums'][$i]['items_count'] = count($items[$album['album']]);

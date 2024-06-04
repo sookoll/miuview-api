@@ -46,47 +46,39 @@ class Session {
    
     public function startSession(){
     	
-        if ( $this->sessionState == self::SESSION_NOT_STARTED ){
+        if ( $this->sessionState === self::SESSION_NOT_STARTED ){
             $this->sessionState = session_start();
         }
         return $this->sessionState;
     }
-   
-   
+
     /**
-    *    Stores datas in the session.
-    *    Example: $instance->foo = 'bar';
-    *   
-    *    @param    name    Name of the datas.
-    *    @param    value    Your datas.
-    *    @return    void
-    **/
-   
+     * Stores datas in the session.
+     * Example: $instance->foo = 'bar';
+     *
+     * @param $name string Name of the datas.
+     * @param $value mixed Your datas.
+     * @return void
+     */
     public function __set( $name , $value ){
         $_SESSION[$name] = $value;
     }
-   
-   
+
     /**
-    *    Gets datas from the session.
-    *    Example: echo $instance->foo;
-    *   
-    *    @param    name    Name of the datas to get.
-    *    @return    mixed    Datas stored in session.
-    **/
-   
+     * Gets datas from the session.
+     * Example: echo $instance->foo;
+     *
+     * @param $name string Name of the datas to get.
+     * @return mixed|void Datas stored in session.
+     */
     public function __get( $name ){
-        if ( isset($_SESSION[$name])){
-            return $_SESSION[$name];
-        }
+        return $_SESSION[$name] ?? null;
     }
-   
-   
+
     public function __isset( $name ){
         return isset($_SESSION[$name]);
     }
-   
-   
+
     public function __unset( $name ){
         unset( $_SESSION[$name] );
     }   
@@ -97,8 +89,8 @@ class Session {
     *    @return    bool    TRUE is session has been deleted, else FALSE.
     **/
    
-    public function destroy(){
-        if ( $this->sessionState == self::SESSION_STARTED ){
+    public function destroy() {
+        if ( $this->sessionState === self::SESSION_STARTED ){
             $this->sessionState = !session_destroy();
             unset( $_SESSION );
             return !$this->sessionState;
@@ -141,4 +133,3 @@ $data->destroy();
 // FALSE
 var_dump( isset( $data->nickname ));
 */
-?>

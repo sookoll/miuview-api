@@ -10,7 +10,7 @@
 
 class main {
 
-    var $output=array();
+    public $output = array();
 
     public function __construct(){
         global $sess,$func;
@@ -151,7 +151,7 @@ class main {
                     foreach($album as $item){
                         if($i = $func->getType(PATH_ALBUMS.$akey.'/'.$item)){
                             $type = $i['type'];
-                            $meta = $this->getExif(PATH_ALBUMS.$akey.'/'.$item)?$this->getExif(PATH_ALBUMS.$akey.'/'.$item):'';
+                            $meta = $this->getExif(PATH_ALBUMS . $akey . '/' . $item) ?: '';
                             $q = "INSERT INTO ".TBL_ITEMS." (item,type,album,description,metadata,sort,added) SELECT '".$item."','".$type."','".$akey."','','".$meta."',CASE WHEN (SELECT COUNT(item) FROM ".TBL_ITEMS.") = 0 THEN 0 ELSE (SELECT MAX(sort)+1 FROM ".TBL_ITEMS.") END,NOW()";
                             $func->makeQuery($q);
                         }
@@ -166,7 +166,7 @@ class main {
                         foreach($albums[$album] as $item){
                             if($i = $func->getType(PATH_ALBUMS.$album.'/'.$item)){
                                 $type = $i['type'];
-                                $meta = $this->getExif(PATH_ALBUMS.$album.'/'.$item)?$this->getExif(PATH_ALBUMS.$album.'/'.$item):'';
+                                $meta = $this->getExif(PATH_ALBUMS . $album . '/' . $item) ?: '';
                                 $q = "INSERT INTO ".TBL_ITEMS." (item,type,album,description,metadata,sort,added) SELECT '".$item."','".$type."','".$album."','','".$meta."',CASE WHEN (SELECT COUNT(item) FROM ".TBL_ITEMS.") = 0 THEN 0 ELSE (SELECT MAX(sort)+1 FROM ".TBL_ITEMS.") END,NOW()";
                                 $func->makeQuery($q);
                             }
@@ -197,8 +197,9 @@ class main {
             $albums = scandir(PATH_CACHE);
             if(count($albums)>2){
                 foreach($albums as $album){
-                    if(file_exists(PATH_CACHE.$album) && $album != '.' && $album != '..' && is_dir(PATH_CACHE.$album))
-                        $func->RemoveEmptySubFolders(PATH_CACHE.$album);
+                    if ($album !== '.' && $album !== '..' && file_exists(PATH_CACHE.$album) && is_dir(PATH_CACHE.$album)) {
+                        $func->RemoveEmptySubFolders(PATH_CACHE . $album);
+                    }
                 }
             }
 
@@ -235,10 +236,10 @@ class main {
                 foreach($albums as $row){
                     $items = $func->getItems($row['album']);
                     $a['album'] = $row['album'];
-                    $a['name'] = $row['title']!=''?$row['title']:$row['album'];
-                    $a['thumb'] = $row['thumb']!=''?$a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['thumb'].'&size=100&mode=square&key='.md5(SECURITY_KEY):'{_def-tmpl_}images/album.png';
+                    $a['name'] = $row['title'] !== ''? $row['title'] : $row['album'];
+                    $a['thumb'] = $row['thumb'] !== '' ? $a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['thumb'].'&size=100&mode=square&key='.md5(SECURITY_KEY):'{_def-tmpl_}images/album.png';
                     $a['pics'] = count($items[$row['album']]);
-                    $a['public'] = $row['public']==1?'checked="checked"':'';
+                    $a['public'] = $row['public'] === 1 ? 'checked="checked"' : '';
                     $tmp['content']['data'] .= $func->replace_tags($html,$a);
                 }
             }
@@ -255,21 +256,23 @@ class main {
         global $sess,$func,$data;
         $tmp['content']['status'] = '0';
 
-        if($sess->miuview_admin_in === true){
+        if ($sess->miuview_admin_in === true) {
             $albums = $func->getAlbums();
             foreach($data as $k => $v){
-                if(array_key_exists('publc',$data[$k]) && $data[$k]['publc'] === 'true')
-                    $public=1;
-                else
-                    $public=0;
-                if($data[$k]['name']==$albums[$k]['title'] && $data[$k]['sort']==$albums[$k]['sort'] && $public==$albums[$k]['public'])
+                if (array_key_exists('publc', $v) && $v['publc'] === 'true') {
+                    $public = 1;
+                } else {
+                    $public = 0;
+                }
+                if ($v['name'] === $albums[$k]['title'] && $v['sort'] === $albums[$k]['sort'] && $public === $albums[$k]['public'])
                     continue;
                 else{
-                    $q = "UPDATE ".TBL_ALBUMS." SET title='".htmlentities($data[$k]['name'], ENT_QUOTES)."',sort=".$data[$k]['sort'].",public=".$public." WHERE album='".$k."'";
-                    if($func->makeQuery($q))
+                    $q = "UPDATE ".TBL_ALBUMS." SET title='".htmlentities($v['name'], ENT_QUOTES)."',sort=". $v['sort'].",public=".$public." WHERE album='".$k."'";
+                    if ($func->makeQuery($q)) {
                         $tmp['content']['status'] = '1';
-                    else
+                    } else {
                         $tmp['content']['status'] = '0';
+                    }
                 }
             }
         }
@@ -285,19 +288,19 @@ class main {
         $tmp['content']['data'] = '';
 
         if($sess->miuview_admin_in === true){
-            if($items = $func->getItems($album)){
+            if ($items = $func->getItems($album)) {
                 $html = PATH_TMPL.TEMPLATE.'/html/item.html';
                 $albums = $func->getAlbums($album);
                 foreach($items[$album] as $row){
                     $a['item'] = $row['item'];
                     $a['thumb'] = URL.'?request=getimage&album='.$row['album'].'&item='.$row['item'].'&size='.TH_SIZE.'&mode=square&key='.md5(SECURITY_KEY);
-                    $a['album-thumb'] = $row['item']==$albums[$album]['thumb']?'checked':'';
+                    $a['album-thumb'] = $row['item'] === $albums[$album]['thumb'] ? 'checked' : '';
                     $a['width'] = $a['height'] = TH_SIZE;
                     $tmp['content']['data'] .= $func->replace_tags($html,$a);
                 }
             }
             $tmp['content']['url'] = URL.'?request=getitem&album='.$album.'&item=*&size='.ITEM_SIZE.'&thsize='.TH_SIZE.'&key=';
-            $tmp['content']['title'] = $albums[$album]['title'];
+            $tmp['content']['title'] = isset($albums) ? $albums[$album]['title'] : '';
             $tmp['content']['status'] = '1';
         }
         $tmp['content_type'] = 'json';
@@ -311,25 +314,27 @@ class main {
 
         if($sess->miuview_admin_in === true){
             $albums = $func->getAlbums($album);
-            if($albums[$album]['thumb']!=$thumb){
+            if ($albums[$album]['thumb'] !== $thumb) {
                 $q = "UPDATE ".TBL_ALBUMS." SET thumb='".$thumb."' WHERE album='".$album."'";
-                if($func->makeQuery($q))
+                if ($func->makeQuery($q)) {
                     $tmp['content']['status'] = '1';
+                }
             }
 
             $items = $func->getItems($album);
-            if(array_key_exists('sort',$data)){
+            if (array_key_exists('sort',$data)){
+                foreach($data['sort'] as $k => $v){
+                    if($v === $items[$album][$k]['sort']) {
+                        continue;
+                    }
 
-            }
-            foreach($data['sort'] as $k => $v){
-                if($v==$items[$album][$k]['sort'])
-                    continue;
-                else{
                     $q = "UPDATE ".TBL_ITEMS." SET sort=".$v." WHERE item='".$k."' AND album='".$album."'";
-                    if($func->makeQuery($q))
+                    if ($func->makeQuery($q)) {
                         $tmp['content']['status'] = '1';
+                    }
                 }
             }
+
         }
 
         $tmp['content_type'] = 'json';
@@ -348,8 +353,9 @@ class main {
                 $tmp['content']['prev'] = $items[$album][$arrnav['prev']]['item'];
                 $tmp['content']['next'] = $items[$album][$arrnav['next']]['item'];
 
-                if($items[$album][$item]['type']=='picture')
-                    $html = PATH_TMPL.TEMPLATE.'/html/picture.html';
+                if($items[$album][$item]['type'] === 'picture') {
+                    $html = PATH_TMPL . TEMPLATE . '/html/picture.html';
+                }
 
                 $a['item'] = $item;
                 $a['next'] = $tmp['content']['next'];
@@ -358,8 +364,9 @@ class main {
                 $a['title'] = $items[$album][$item]['title'];
                 $a['description'] = $items[$album][$item]['description'];
                 $a['width'] = $a['height'] = ITEM_SIZE;
-                $tmp['content']['data'] .= $func->replace_tags($html,$a);
-
+                if (isset($html)) {
+                    $tmp['content']['data'] .= $func->replace_tags($html,$a);
+                }
             }
             $tmp['content']['status'] = '1';
         }
@@ -375,10 +382,11 @@ class main {
         if($sess->miuview_admin_in === true){
             $items = $func->getItems($album,$item);
             if(array_key_exists($album,$items) && array_key_exists($item,$items[$album])){
-                if($items[$album][$item]['description']!=$description || $items[$album][$item]['title']!=$title){
+                if($items[$album][$item]['description'] !== $description || $items[$album][$item]['title'] !== $title){
                     $q = "UPDATE ".TBL_ITEMS." SET title='".htmlentities($title, ENT_QUOTES)."',description='".htmlentities($description, ENT_QUOTES)."' WHERE album='".$album."' AND item='".$item."'";
-                    if($func->makeQuery($q))
+                    if($func->makeQuery($q)) {
                         $tmp['content']['status'] = '1';
+                    }
                 }
             }
         }
@@ -396,10 +404,8 @@ class main {
             ),
             'content_type' => 'json'
         );
-        if($sess->miuview_admin_in === true){
-            if(is_dir(PATH_ALBUMS.$album) && $func->removedir(PATH_ALBUMS.$album)){
-                $tmp['content']['status'] = 1;
-            }
+        if(($sess->miuview_admin_in === true) && is_dir(PATH_ALBUMS . $album) && $func->removedir(PATH_ALBUMS . $album)) {
+            $tmp['content']['status'] = 1;
         }
         $this->output = $tmp;
     }
@@ -436,20 +442,22 @@ class main {
             $target_dir = PATH_ALBUMS.$album;
             $key = 'files2';
         } else if(isset($_POST['hash']) && strpos($_POST['hash'], '../') === false) {
-            if(!is_dir(PATH_ALBUMS.$_POST['hash']))
-                @mkdir(PATH_ALBUMS.$_POST['hash']);
+            if(!is_dir(PATH_ALBUMS . $_POST['hash']) && !mkdir($concurrentDirectory = PATH_ALBUMS . $_POST['hash']) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
             $target_dir = PATH_ALBUMS.$_POST['hash'];
             $key = 'files1';
         }
 
-        $target_file = $target_dir .'/'. basename($_FILES[$key]["name"][0]);
+        if (isset($target_dir)) {
+            $target_file = $target_dir .'/'. basename($_FILES[$key]["name"][0]);
+        }
 
         // check image
         $check = getimagesize($_FILES[$key]["tmp_name"][0]);
         if($check === false) {
             $uploadOk = 0;
         }
-
 
         // Check if file already exists
         if (file_exists($target_file)) {
@@ -463,11 +471,11 @@ class main {
         // Allow certain file formats
         $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
-        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+        if($imageFileType !== "jpg" && $imageFileType !== "png" && $imageFileType !== "jpeg" && $imageFileType !== "gif" ) {
             $uploadOk = 0;
         }
-        //var_dump($target_file, pathinfo($target_file,PATHINFO_EXTENSION), $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif");
-        if ($uploadOk == 1) {
+
+        if ($uploadOk === 1) {
             if (move_uploaded_file($_FILES[$key]["tmp_name"][0], $target_file)) {
                 $tmp['status']=$uploadOk;
             }
@@ -497,9 +505,11 @@ class main {
 
         require_once PATH_INC.'exif.php';
         $e = new exif($i);
-        if($exif = $e->getExif())
+        if($exif = $e->getExif()) {
             return json_encode($exif);
-        else return false;
+        } else {
+            return false;
+        }
     }
 
     // delete cache item
@@ -514,7 +524,7 @@ class main {
             if(count($caches)>2){ // The 2 accounts for . and ..
                 // loop
                 foreach($caches as $cache){
-                    if(file_exists($path.$cache) && $cache != '.' && $cache != '..' && is_dir($path.$cache)){
+                    if($cache !== '.' && $cache !== '..' && file_exists($path.$cache) && is_dir($path.$cache)){
                         $files = scandir($path.$cache);
                         sort($files);
                         if(count($files)>2){ // The 2 accounts for . and ..
@@ -530,28 +540,30 @@ class main {
 
     // compare arrays, return mistakes
     private function compareArrays($array1,$array2,$rtype){
-        $tmp = $rtype == 'array' ? array(array(),array()):array();
-        foreach($array1 as $ak => $av){
-            if(array_key_exists($ak,$array2)){
-                if($u=array_diff($array1[$ak],$array2[$ak])){
-                    if($rtype == 'array')
+        $tmp = $rtype === 'array' ? array(array(),array()):array();
+        foreach ($array1 as $ak => $av) {
+            if (array_key_exists($ak,$array2)) {
+                if ($u=array_diff($av,$array2[$ak])) {
+                    if ($rtype === 'array') {
                         $tmp[1][$ak] = array();
-                    else
-                        $tmp[1].='<li class="folder"><b>'.$ak.'</b><ul>';
-                    foreach($u as $i){
-                        if($rtype == 'array')
-                            $tmp[1][$ak][] = $i;
-                        else
-                            $tmp[1].='<li class="picture">'.$i.'</li>';
+                    } else {
+                        $tmp[1] .= '<li class="folder"><b>' . $ak . '</b><ul>';
                     }
-                    if($rtype != 'array')
-                        $tmp[1].='</ul></li>';
+                    foreach ($u as $i) {
+                        if($rtype === 'array') {
+                            $tmp[1][$ak][] = $i;
+                        } else {
+                            $tmp[1] .= '<li class="picture">' . $i . '</li>';
+                        }
+                    }
+                    if ($rtype !== 'array') {
+                        $tmp[1] .= '</ul></li>';
+                    }
                 }
-            }else{
-                if($rtype == 'array')
-                    $tmp[0][] = $ak;
-                else
-                    $tmp[0].='<li class="folder">'.$ak.'</li>';
+            } elseif ($rtype === 'array') {
+                $tmp[0][] = $ak;
+            } else {
+                $tmp[0] .= '<li class="folder">' . $ak . '</li>';
             }
         }
         return $tmp;
@@ -559,6 +571,7 @@ class main {
 
     private function checkOrientation($path) {
       global $func;
+
       $data = array();
       if (file_exists($path)) {
         // read content into array
@@ -567,7 +580,7 @@ class main {
         if (count($albums)>2) { /* The 2 accounts for . and .. */
           // loop
           foreach ($albums as $album) {
-            if (file_exists($path.$album) && $album != '.' && $album != '..' && is_dir($path.$album)) {
+            if (file_exists($path.$album) && $album !== '.' && $album !== '..' && is_dir($path.$album)) {
               $items = scandir($path.$album);
               sort($items);
               if (count($items)>2) { /* The 2 accounts for . and .. */
@@ -576,8 +589,8 @@ class main {
                   $type = $func->getType($path.$album.'/'.$item);
                   if (
                     file_exists($path.$album.'/'.$item) &&
-                    $item != '.' &&
-                    $item != '..' &&
+                    $item !== '.' &&
+                    $item !== '..' &&
                     !is_dir($path.$album.'/'.$item) &&
                     $type &&
                     $type['ext'] === 'jpg' &&
@@ -586,7 +599,7 @@ class main {
                     $exif = exif_read_data($path.$album.'/'.$item);
                     if ($exif && isset($exif['Orientation'])) {
                       $orientation = $exif['Orientation'];
-                      if ($orientation != 1){
+                      if ($orientation !== 1){
                         $data[] = '<li class="picture">'.$path.$album.'/'.$item.'</li>';
                       }
                     }
@@ -624,26 +637,26 @@ class main {
     private function folder2array($path){
         global $func;
         $data = array();
-        if(file_exists($path)){
+        if (file_exists($path)) {
             // read content into array
             $albums = scandir($path);
             sort($albums);
-            if(count($albums)>2){ /* The 2 accounts for . and .. */
+            if (count($albums)>2) { /* The 2 accounts for . and .. */
                 // loop
-                foreach($albums as $album){
-                    if(file_exists($path.$album) && $album != '.' && $album != '..' && is_dir($path.$album)){
+                foreach ($albums as $album) {
+                    if ($album !== '.' && $album !== '..' && file_exists($path.$album) && is_dir($path.$album)) {
                         $items = scandir($path.$album);
                         sort($items);
-                        if(count($items)>2){ /* The 2 accounts for . and .. */
+                        if (count($items) > 2) { /* The 2 accounts for . and .. */
                             // loop
-                            foreach($items as $item){
-                                if(file_exists($path.$album.'/'.$item) && $item != '.' && $item != '..' && !is_dir($path.$album.'/'.$item) && $func->getType($path.$album.'/'.$item)){
+                            foreach($items as $item) {
+                                if (file_exists($path.$album.'/'.$item) && $item != '.' && $item != '..' && !is_dir($path.$album.'/'.$item) && $func->getType($path.$album.'/'.$item)) {
                                     $data[urlencode($album)][]=urlencode($item);
                                 }
                             }
-                        }
-                        else
+                        } else {
                             $data[urlencode($album)] = array();
+                        }
                     }
                 }
             }
@@ -652,28 +665,28 @@ class main {
     }
 
     # read folder content into array, for cache
-    private function folder2array2($path){
+    private function folder2array2($path) {
         $data = array();
-        if(file_exists($path)){
+        if (file_exists($path)) {
             // read content into array
             $albums = scandir($path);
             sort($albums);
-            if(count($albums)>2){ /* The 2 accounts for . and .. */
+            if (count($albums)>2) { /* The 2 accounts for . and .. */
                 // loop albums
-                foreach($albums as $album){
+                foreach($albums as $album) {
                     if(file_exists($path.$album) && $album != '.' && $album != '..' && is_dir($path.$album)){
                         $caches = scandir($path.$album);
                         sort($caches);
-                        if(count($caches)>2){ /* The 2 accounts for . and .. */
+                        if (count($caches)>2) { /* The 2 accounts for . and .. */
                             // loop cache dimensions
-                            foreach($caches as $cache){
-                                if(file_exists($path.$album.'/'.$cache) && $cache != '.' && $cache != '..' && is_dir($path.$album.'/'.$cache)){
+                            foreach($caches as $cache) {
+                                if ($cache !== '.' && $cache !== '..' && file_exists($path.$album.'/'.$cache) && is_dir($path.$album.'/'.$cache)) {
                                     $items = scandir($path.$album.'/'.$cache);
                                     sort($items);
-                                    if(count($items)>2){ /* The 2 accounts for . and .. */
+                                    if (count($items) > 2) { /* The 2 accounts for . and .. */
                                         // loop
-                                        foreach($items as $item){
-                                            if(file_exists($path.$album.'/'.$cache.'/'.$item) && $item != '.' && $item != '..' && !is_dir($path.$album.'/'.$cache.'/'.$item)){
+                                        foreach($items as $item) {
+                                            if ($item !== '.' && $item !== '..' && file_exists($path.$album.'/'.$cache.'/'.$item) && !is_dir($path.$album.'/'.$cache.'/'.$item)) {
                                                 $data[urlencode($album)][]=urlencode($item);
                                             }
                                         }
@@ -681,9 +694,9 @@ class main {
 
                                 }
                             }
-                        }
-                        else
+                        } else {
                             $data[urlencode($album)] = array();
+                        }
                     }
                 }
             }
@@ -692,25 +705,26 @@ class main {
     }
 
     // format names
-    private function formatNames($path){
-
-        if(file_exists($path)){
+    private function formatNames($path) {
+        if (file_exists($path)) {
             $files = scandir($path);
-            if(count($files)>2){
-                foreach ($files as $file){
-                    if(file_exists($path.'/'.$file) && $file != '.' && $file != '..'){
+            if (count($files) > 2) {
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..' && file_exists($path.'/'.$file)) {
                         // rename
                         $nfile = preg_replace('/\s{2,}/','',trim($file));
                         $nfile = str_replace(' ','-',$nfile);
                         $nfile = preg_replace('/[^a-z0-9-._]/i','',$nfile);
                         $nfile = preg_replace('/-{2,}/','-',$nfile);
                         $nfile = strtolower($nfile);
-                        if($file!=$nfile)
-                            $nfile = $this->checkName($path,$nfile);
+                        if($file !== $nfile) {
+                            $nfile = $this->checkName($path, $nfile);
+                        }
                         rename($path.'/'.$file,$path.'/'.$nfile);
                         //if dir
-                        if(is_dir($path.'/'.$nfile))
-                            $this->formatNames($path.'/'.$file);
+                        if(is_dir($path.'/'.$nfile)) {
+                            $this->formatNames($path . '/' . $file);
+                        }
                     }
                 }
             }
@@ -719,15 +733,16 @@ class main {
     }
 
     private function checkName($path,$file){
-        if(file_exists($path.'/'.$file)){
-            if(is_dir($path.'/'.$file))
-                $file = $file.'-1';
-            else
-                $file = substr_replace($file,'-1.', strrpos($file, '.'), 1);
+        if (file_exists($path.'/'.$file)) {
+            if (is_dir($path.'/'.$file)) {
+                $file .= '-1';
+            } else {
+                $file = substr_replace($file, '-1.', strrpos($file, '.'), 1);
+            }
             return $this->checkName($path,$file);
-        }
-        else
+        } else {
             return $file;
+        }
     }
 
     // return output
@@ -735,5 +750,3 @@ class main {
         return $this->output;
     }
 }
-
-?>

@@ -19,8 +19,8 @@ class getitem {
 	public function __construct(){
 		global $func,$album,$item,$size,$thsize,$key,$start,$limit;
 
-		$this->size = $size?$size:ITEM_SIZE;
-		$this->thsize = $thsize?$thsize:TH_SIZE;
+		$this->size = $size ?: ITEM_SIZE;
+		$this->thsize = $thsize ?: TH_SIZE;
 
 		$this->skey = $key;
 
@@ -38,7 +38,7 @@ class getitem {
 							$iresult = array_merge_recursive($iresult,$func->getItems($a,$i));
 						}
 					} else {
-						if($item == '*'){
+						if($item === '*'){
 							$iresult = array_merge_recursive($iresult,$func->getItems($a,null,$start,$limit));
 						} else {
 							$iresult = array_merge_recursive($iresult,$func->getItems($a,$item));
@@ -46,7 +46,7 @@ class getitem {
 					}
 				}
 			} else {
-				if($album == '*'){
+				if($album === '*'){
 					$aresult = $func->getAlbums();
 				} else {
 					$aresult = $func->getAlbums($album);
@@ -56,14 +56,13 @@ class getitem {
 						$iresult = array_merge_recursive($iresult,$func->getItems($album,$i));
 					}
 				} else {
-					if($item == '*'){
+					if($item === '*'){
 						$iresult = $func->getItems($album,null,$start,$limit);
 					} else {
 						$iresult = $func->getItems($album,$item);
 					}
 				}
 			}
-			print_r($result);
 			$this->result = $this->formatResult($aresult,$iresult);
 			$this->output();
 		} else
@@ -76,9 +75,9 @@ class getitem {
 
 		$data['query'] = $func->selfURL();
 		$i=0;
-		foreach($ir as $album => $items){
-			if($ar[$album]['public']==1 || $this->skey==md5(SECURITY_KEY)) {
-				foreach($items as $item){
+		foreach($ir as $album => $items) {
+			if ($ar[$album]['public'] === 1 || $this->skey === md5(SECURITY_KEY)) {
+				foreach($items as $item) {
 					$data['items'][$i]['id']=$item['item'];
 					$data['items'][$i]['album']=$item['album'];
 					$data['items'][$i]['title']=$item['title'];
@@ -86,7 +85,7 @@ class getitem {
 					$data['items'][$i]['type']=$item['type'];
 					$data['items'][$i]['order']=$i;
 					$data['items'][$i]['created']=$item['added'];
-					if($item['metadata']!=''){
+					if($item['metadata'] !== ''){
 						$data['items'][$i]['metadata'] = json_decode($item['metadata'],true);
 					}
 					$data['items'][$i]['thumb_url']=URL.'?request=getimage&album='.$album.'&item='.$item['item'].'&size='.$this->thsize.'&mode=square';
@@ -101,18 +100,16 @@ class getitem {
 		return json_encode($data);
 	}
 
-	private function c($i=null){
-		return $i!=null?$i:'';
+	private function c($i = null){
+		return $i ?? '';
 	}
 
 	private function output(){
 		header('Content-Type: text/json; charset=utf-8');
-		if($_GET['callback']){
+		if (isset($_GET['callback'])) {
 			echo $_GET['callback'].'('.$this->result.');';
-		}else{
+		} else {
 			echo $this->result;
 		}
 	}
-
 }
-?>

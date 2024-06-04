@@ -30,8 +30,8 @@ class Functions {
 	}
 
 	# method to make query
-	function makeQuery($q){
-		return $this->db->query($q);
+	function makeQuery($q) {
+        return $this->db->query($q);
 	}
 
 	# move to url
@@ -46,7 +46,7 @@ class Functions {
 			$serverrequri = $_SERVER['PHP_SELF'];
 		else
 			$serverrequri = $_SERVER['REQUEST_URI'];
-		$s = empty($_SERVER["HTTPS"]) ? '' : ($_SERVER["HTTPS"] == "on") ? "s" : "";
+		$s = empty($_SERVER["HTTPS"]) ? '' : (($_SERVER["HTTPS"] === "on") ? "s" : "");
 		$protocol = strtolower($_SERVER["SERVER_PROTOCOL"]);
 		$protocol = substr($protocol, 0, strpos($protocol, "/")).$s;
 		$port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
@@ -55,7 +55,7 @@ class Functions {
 
 	# read file into variable
 	function parseFile($page){
-		$fd = fopen($page,'r');
+		$fd = fopen($page, 'rb');
 		$page = @fread($fd, filesize($page));
 		fclose($fd);
 		return $page;
@@ -77,8 +77,8 @@ class Functions {
 	    $keys = array_keys($array);
 	    $index = array_flip($keys);
 	    $r = array();
-	    $r['prev'] = (isset($keys[$index[$key]-1])) ? $keys[$index[$key]-1] : end($keys);
-		$r['next'] = (isset($keys[$index[$key]+1])) ? $keys[$index[$key]+1] : reset($keys);
+	    $r['prev'] = $keys[$index[$key] - 1] ?? end($keys);
+		$r['next'] = $keys[$index[$key] + 1] ?? reset($keys);
 	    return $r;
 	}
 
@@ -98,9 +98,12 @@ class Functions {
 			$dir_handle = opendir($dirname);
 		if (!$dir_handle) return false;
 		while($file = readdir($dir_handle)) {
-			if ($file != '.' && $file != '..') {
-				if (@is_file($dirname.'/'.$file)) unlink($dirname.'/'.$file);
-				else $this->removedir($dirname.'/'.$file);
+			if ($file !== '.' && $file !== '..') {
+				if (@is_file($dirname.'/'.$file)) {
+					unlink($dirname . '/' . $file);
+				} else {
+					$this->removedir($dirname . '/' . $file);
+				}
 			}
 		}
 		closedir($dir_handle);
@@ -115,14 +118,18 @@ class Functions {
 			$files = scandir($path);
 			if(count($files)>2){
 				foreach ($files as $file){
-					if(file_exists($path.'/'.$file) && $file != '.' && $file != '..' && is_dir($path.'/'.$file)){
-						if (!$this->RemoveEmptySubFolders($path.'/'.$file)) $empty=false;
-					}else{
+					if(file_exists($path.'/'.$file) && $file !== '.' && $file !== '..' && is_dir($path.'/'.$file)) {
+						if (!$this->RemoveEmptySubFolders($path.'/'.$file)) {
+							$empty = false;
+						}
+					} else {
 						$empty=false;
 					}
 				}
 			}
-			if ($empty) rmdir($path);
+			if ($empty) {
+				rmdir($path);
+			}
 	  		return $empty;
 		}
 	}
@@ -133,7 +140,7 @@ class Functions {
 			$ext = strtolower(substr($item, strrpos($item, '.') + 1));
 			$types = unserialize(FORMATS);
 			foreach($types as $key => $type){
-				if(in_array($ext,$type)){
+				if(in_array($ext, $type, true)){
 					return array('type'=>$key,'ext'=>$ext);
 				}
 			}
@@ -146,8 +153,8 @@ class Functions {
 	function getAlbums($album = null){
 		$tmp = array();
 
-		$q=$album==null?"SELECT * FROM ".TBL_ALBUMS." ORDER BY sort DESC":"SELECT * FROM ".TBL_ALBUMS." WHERE album='".$album."'";
-		if($result = $this->makeQuery($q)){
+		$q = $album === null ? "SELECT * FROM ".TBL_ALBUMS." ORDER BY sort DESC":"SELECT * FROM ".TBL_ALBUMS." WHERE album='".$album."'";
+		if ($result = $this->makeQuery($q)) {
 			while($row = $result->fetch_assoc()) {
 				$tmp[$row['album']] = $row;
 			}
@@ -156,28 +163,28 @@ class Functions {
 	}
 
 	// get items
-	function getItems($album,$item=null,$start=null,$limit=null){
+	function getItems($album, $item = null, $start = null, $limit = null) {
 		$tmp = array();
-
-		if($start!=null && $limit!=null)
-			$l = " LIMIT ".$start.",".$limit;
-		else
+		if($start !== null && !empty($limit)) {
+			$l = " LIMIT " . $start . "," . $limit;
+		} else {
 			$l = '';
+		}
 
-		if($album=='*')
-			$q=$item!=null?"SELECT * FROM ".TBL_ITEMS." WHERE item='".$item."'":"SELECT * FROM ".TBL_ITEMS." ORDER BY sort ASC".$l;
-		else
-			$q=$item!=null?"SELECT * FROM ".TBL_ITEMS." WHERE album='".$album."' AND item='".$item."'":"SELECT * FROM ".TBL_ITEMS." WHERE album='".$album."' ORDER BY sort ASC".$l;
-		if($result = $this->makeQuery($q)){
-			while($row = $result->fetch_assoc()){
+		if ($album === '*') {
+			$q = $item !== null ? "SELECT * FROM " . TBL_ITEMS . " WHERE item='" . $item . "'" : "SELECT * FROM " . TBL_ITEMS . " ORDER BY sort ASC" . $l;
+		} else {
+			$q = $item !== null ? "SELECT * FROM " . TBL_ITEMS . " WHERE album='" . $album . "' AND item='" . $item . "'" : "SELECT * FROM " . TBL_ITEMS . " WHERE album='" . $album . "' ORDER BY sort ASC" . $l;
+		}
+		if ($result = $this->makeQuery($q)) {
+			while ($row = $result->fetch_assoc()) {
 				$tmp[$row['album']][$row['item']] = $row;
 			}
 			return $tmp;
+		} else {
+			return false;
 		}
-		else return false;
 	}
 }
 
 $func = new Functions();
-
-?>

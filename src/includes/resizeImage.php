@@ -32,13 +32,11 @@ class resizeImage{
 		$this->src_info['mime'] = $is['mime'];
 	}
 	
-	public function __get($name){
-        if(isset($name)){
-            return $name;
-        }
+	public function __get($name) {
+        return $name ?? null;
     }
 	
-	private function getExtension($item){
+	private function getExtension($item) {
 		return strtolower(substr($item, strrpos($item, '.') + 1));
 	}
 	
@@ -67,21 +65,19 @@ class resizeImage{
 		return getimagesize($item);
 	}
 	
-	public function setThumbParams($size=100,$mode='longest',$crop=0,$quality=75){
-		
+	public function setThumbParams($size = 100, $mode = 'longest', $crop = 0, $quality = 75) {
 		// only allowed modes
-		if(!in_array($mode, $this->modes)) $mode='longest';
+		if (!in_array($mode, $this->modes, true)) {
+            $mode = 'longest';
+        }
 		$this->th_mode = $mode;
 		
 		// set needed size
 		//switch by mode
-		switch($this->th_mode){
+		switch($this->th_mode) {
 			case 'longest':
 				//find biggest length
-				if ($this->src_info['width']>=$this->src_info['height'])
-					$longest = $this->src_info['width'];
-				else
-					$longest = $this->src_info['height'];
+				$longest = max($this->src_info['width'], $this->src_info['height']);
 			break;
 			case 'width':
 				$longest = $this->src_info['width'];
@@ -90,26 +86,31 @@ class resizeImage{
 				$longest = $this->src_info['height'];
 			break;
 			case 'square':
-				if ($this->src_info['width']<=$this->src_info['height'])
-					$longest = $this->src_info['width'];
-				else
-					$longest = $this->src_info['height'];
+				$longest = min($this->src_info['width'], $this->src_info['height']);
 			break;
 		} // switch
-		
-		if($longest>$size)
-			$this->th_size['init'] = $size;
-		else
-			$this->th_size['init'] = $longest;
+
+        if (isset($longest)) {
+            $this->th_size['init'] = min($longest, $size);
+        }
+
 		
 		// hold crop % between 0 and 75
-		if($crop<0) $crop=0;
-		if($crop>75) $crop=75;
+		if($crop<0) {
+            $crop = 0;
+        }
+		if($crop>75) {
+            $crop = 75;
+        }
 		$this->th_crop = $crop;
 		
 		// hold quality % between 0 and 100
-		if($quality<0) $quality=0;
-		if($quality>100) $quality=100;
+		if($quality<0) {
+            $quality = 0;
+        }
+		if($quality>100) {
+            $quality = 100;
+        }
 		$this->th_quality = $quality;
 		
 		//setting the top left coordinate
@@ -122,10 +123,11 @@ class resizeImage{
 		switch($this->th_mode){
 			case 'longest':
 				//find biggest length
-				if ($this->src_info['width']>=$this->src_info['height'])
-					list($this->th_size['width'],$this->th_size['height'])=$this->calculator($this->th_size['init'],$this->src_info['width'],$this->src_info['height']);
-				else
-					list($this->th_size['height'],$this->th_size['width'])=$this->calculator($this->th_size['init'],$this->src_info['height'],$this->src_info['width']);
+				if ($this->src_info['width']>=$this->src_info['height']) {
+                    list($this->th_size['width'], $this->th_size['height']) = $this->calculator($this->th_size['init'], $this->src_info['width'], $this->src_info['height']);
+                } else {
+                    list($this->th_size['height'], $this->th_size['width']) = $this->calculator($this->th_size['init'], $this->src_info['height'], $this->src_info['width']);
+                }
 			break;
 			case 'width':
 				list($this->th_size['width'],$this->th_size['height'])=$this->calculator($this->th_size['init'],$this->src_info['width'],$this->src_info['height']);
@@ -135,11 +137,11 @@ class resizeImage{
 			break;
 			case 'square':
 				//find biggest length
-				if($this->src_info['width']>=$this->src_info['height']){
+				if ($this->src_info['width']>=$this->src_info['height']) {
 					//getting the top left coordinate
 					$this->th_origin['x'] = ($this->src_info['width']-$this->src_info['height'])/2;
 					$this->src_info['width']=$this->src_info['height'];
-				}else{
+				} else {
 					//getting the top left coordinate
 					$this->th_origin['y'] = ($this->src_info['height']-$this->src_info['width'])/2;
 					$this->src_info['height']=$this->src_info['width'];
@@ -149,8 +151,7 @@ class resizeImage{
 		} // switch
 
 		// if crop not 0, then calculate new image dimensions and top-left point
-		if($this->th_crop!=0){
-
+		if ($this->th_crop !== 0) {
 			//getting the new dimensions
 			$cropPercent = 1-$this->th_crop/100;
 			$cropWidth = $this->src_info['width']*$cropPercent;
@@ -166,8 +167,7 @@ class resizeImage{
 	}
 
 	// create new image
-	function createThumb(){
-		
+	function createThumb() {
 		$this->src_info['ext'] = $this->getExtension($this->src_path);
 		$this->src_img = $this->getRawImage($this->src_path,$this->src_info['ext']);
 		
@@ -194,10 +194,10 @@ class resizeImage{
 	}// create new image
 
 	// output
-	function outputImage($target=''){
+	function outputImage($target = '') {
 
 		// if not save to image, show on fly
-		if($target=='') {
+		if($target === '') {
 			header('Content-type: '.$this->src_info['mime']);
 			$format = $this->src_info['ext'];
 			
@@ -215,7 +215,6 @@ class resizeImage{
 				break;
 				default:
 					exit();
-				break;
 			}
 
 		//detect new image format
@@ -236,7 +235,6 @@ class resizeImage{
 				break;
 				default:
 					exit();
-				break;
 			}
 		}
 
@@ -245,11 +243,11 @@ class resizeImage{
 		
 	} // output
 	
-	private function calculator($a,$b,$c){
-		$r[0]=$a;
-		$r[1]=($a/$b)*$c;
+	private function calculator($a,$b,$c) {
+		$r[0] = $a;
+		$r[1] = ($a / $b) * $c;
+
 		return $r;
 	}
 	
 } // class ResizeImage
-?>
