@@ -82,7 +82,7 @@ class getimage {
 		if (function_exists("apache_request_headers") && $headers = apache_request_headers()) {
 			return $headers;
 		}
-		$headers = array();
+		$headers = [];
 		// Grab the IF_MODIFIED_SINCE header
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
 			$headers['If-Modified-Since'] = $_SERVER['HTTP_IF_MODIFIED_SINCE'];

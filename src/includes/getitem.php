@@ -24,8 +24,8 @@ class getitem {
 
 		$this->skey = $key;
 
-		$aresult = array();
-		$iresult = array();
+		$aresult = [];
+		$iresult = [];
 		if(!empty($album) && !empty($item)){
 			$albums = explode(',',$album);
 			$items = explode(',',$item);
@@ -71,7 +71,7 @@ class getitem {
 
 	private function formatResult($ar,$ir){
 		global $func;
-		$data = array();
+		$data = [];
 
 		$data['query'] = $func->selfURL();
 		$i=0;

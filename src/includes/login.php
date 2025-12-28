@@ -10,7 +10,7 @@
 
 class login {
 
-    public $output = array();
+    public $output = [];
 
     // method to control login and set session variables
     public function setLogin(){

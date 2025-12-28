@@ -8,46 +8,44 @@
  *
  */
 
-error_reporting(E_ALL | E_STRICT);
+require __DIR__ . '/vendor/autoload.php';
+
+use App\Session;
+use App\Functions;
+use App\Main;
 
 // include configuration
-include 'config.php';
+$conf = require __DIR__ . '/config.php';
 
 // set session
-include PATH_INC.'session.php';
 $sess = Session::getInstance();
 
-// include functions class
-include PATH_INC.'functions.php';
-
 // start connection
-$func->connection();
+$func = new Functions();
+$connOk = $func->connection($conf);
 
 // if we manage with page
-if(STATUS != 1) {
-	$html=PATH_TMPL.TEMPLATE.'/html/outoforder.html';
-}
-else {
+if (!$connOk || $conf['STATUS'] !== 1) {
+    $html = $conf['PATH_TMPL'] . $conf['TEMPLATE'] . '/html/outoforder.html';
+} else {
+    $app = new StdClass;
+    $app->sess = $sess;
+    $app->conf = $conf;
+    $app->func = $func;
 
-	$class='main';
-
-	// call a main object
-	if($class && @file_exists(PATH_INC.$class.'.php')){
-		include PATH_INC.$class.'.php';
-		$main = new $class();
-		$data = $main->getResult();
-		$html=PATH_TMPL.TEMPLATE.'/html/main.html';
-		$html = $func->replace_tags($html,$data);
-	}
+    $main = new Main($app);
+    $data = $main->getResult();
+    $html = $conf['PATH_TMPL'] . $conf['TEMPLATE'] . '/html/main.html';
+    $html = $func->replace_tags($html, $data);
 }
 
 // replace all tags
 $defines = $func->definesArray();
-$html = $func->replace_tags($html,$defines);
+$html = $func->replace_tags($html, $defines);
 
 // close connection
 $func->connection_close();
 
 echo $html;
 //print_r($_SESSION);
-?>
+

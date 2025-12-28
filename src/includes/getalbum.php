@@ -21,7 +21,7 @@ class getalbum {
 		
 		$this->skey = $key;
 		
-		$result = array();
+		$result = [];
 		if(!empty($album)){
 			$albums = explode(',',$album);
 			if(count($albums)>1){
@@ -43,7 +43,7 @@ class getalbum {
 	
 	private function formatResult($r){
 		global $func;
-		$data = array();
+		$data = [];
 		
 		$data['query'] = $func->selfURL();
 		$i=0;

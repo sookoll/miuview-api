@@ -38,10 +38,10 @@ class UploadHandler
         'image_resize' => 'Failed to resize image'
     );
 
-    protected $image_objects = array();
+    protected $image_objects = [];
 
     function __construct($options = null, $initialize = true, $error_messages = null) {
-        $this->response = array();
+        $this->response = [];
         $this->options = array(
             'script_url' => $this->get_full_url().'/',
             'upload_dir' => dirname($this->get_server_var('SCRIPT_FILENAME')).'/files/',
@@ -998,7 +998,7 @@ class UploadHandler
     }
 
     protected function handle_image_file($file_path, $file) {
-        $failed_versions = array();
+        $failed_versions = [];
         foreach($this->options['image_versions'] as $version => $options) {
             if ($this->create_scaled_image($file->name, $version, $options)) {
                 if (!empty($version)) {
@@ -1288,7 +1288,7 @@ class UploadHandler
         $content_range = $content_range_header ?
             preg_split('/[^0-9]+/', $content_range_header) : null;
         $size =  $content_range ? $content_range[3] : null;
-        $files = array();
+        $files = [];
         if ($upload) {
             if (is_array($upload['tmp_name'])) {
                 // param_name is an array identifier like "files[]",
@@ -1327,7 +1327,7 @@ class UploadHandler
         if (empty($file_names)) {
             $file_names = array($this->get_file_name_param());
         }
-        $response = array();
+        $response = [];
         foreach($file_names as $file_name) {
             $file_path = $this->get_upload_path($file_name);
             $success = is_file($file_path) && $file_name[0] !== '.' && unlink($file_path);

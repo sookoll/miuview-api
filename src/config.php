@@ -8,37 +8,46 @@
  *
  */
 
-//urls and paths
-define('URL','//'.$_SERVER['SERVER_NAME'].'/miuview-api/src/');// url
-define('PATH',__DIR__.'/');// path
-define('PATH_INC',PATH.'includes/');// server-side scripts
-define('PATH_TMPL',PATH.'templates/');// templates
-define('PATH_ALBUMS',$_SERVER['DOCUMENT_ROOT'].'/pictures/');// original images
-define('PATH_CACHE',$_SERVER['DOCUMENT_ROOT'].'/cache/');// thumbnails
+$path = __DIR__;
 
-// app
-define('STATUS',1);// status, change something else when managing page
-define('TEMPLATE','admin');// application template (must correspond with folder name in template directory)
-define('USER','user');// user
-define('PSWD','passwd');// user passwd
-define('FORMATS',serialize(array('picture'=>array('jpeg','jpg','gif','png')))); // allowed formats
-define('ITEM_SIZE',600);// item size
-define('TH_SIZE',100);// thumb size
-define('SECURITY_KEY','security_key');// security key for request private albums
+$app = [
+    // status, change something else when managing page
+    'STATUS' => 1,
+    'URL' => '//' . $_SERVER['SERVER_NAME'] . '/miuview-api/src',
+    'PATH' => $path,
+    'PATH_INC' => $path . '/includes',
+    'PATH_TMPL' => $path . '/templates',
+    // original images
+    'PATH_ALBUMS' => $_SERVER['DOCUMENT_ROOT'] . '/pictures',
+    // thumbnails
+    'PATH_CACHE' => $_SERVER['DOCUMENT_ROOT'] . '/cache',
+    // application template (must correspond with folder name in template directory)
+    'TEMPLATE' => 'admin',
+    'USER' => 'user',
+    'PSWD' => 'passwd',
+    'FORMATS' => [
+        'picture' => ['jpeg', 'jpg', 'gif', 'png']
+    ],
+    'ITEM_SIZE' => 600,
+    'TH_SIZE' => 100,
+    // security key for request private albums
+    'SECURITY_KEY' => 'security_key'
+];
 
-// db parameters
-define('DB_HOST','');// database server
-define('DB_NAME','');// database
-define('DB_USER','');// database user
-define('DB_PWD','');// database user password
-
-// tables
-define('TBL_ALBUMS','miuview_albums');// users
-define('TBL_ITEMS','miuview_items');// items
+$db = [
+    'DB_HOST' => 'localhost',
+    'DB_NAME' => '',
+    'DB_USER' => '',
+    'DB_PWD' => '',
+    'TBL_ALBUMS' => 'miuview_albums',
+    'TBL_ITEMS' => 'miuview_items'
+];
 
 // libs for put into html head section
-define('HTML_TMPL','templates/'.TEMPLATE.'/');
-define('HTML_LIBS','../libs/');
-define('HTML_ALBUMS','data/albums/');
+$html = [
+    'HTML_TMPL' => 'templates/' . $app['TEMPLATE'],
+    'HTML_LIBS' => '../libs',
+    'HTML_ALBUMS' => 'data/albums'
+];
 
-?>
+return array_merge($app, $db, $html);
